@@ -27,13 +27,13 @@ class SegFormer_B0(pl.LightningModule):
         super().__init__()
         # Define encoder blocks with varying parameters
         self.encoder_blocks = nn.ModuleList([
-            MixTransformerEncoderLayer(3, 32, patch_size=7, stride=4, padding=3, n_layers=2, reduction_ratio=8, num_heads=1, expansion_factor=8),
-            MixTransformerEncoderLayer(32, 64, patch_size=3, stride=2, padding=1, n_layers=2, reduction_ratio=4, num_heads=2, expansion_factor=8),
-            MixTransformerEncoderLayer(64, 160, patch_size=3, stride=2, padding=1, n_layers=2, reduction_ratio=2, num_heads=5, expansion_factor=4),
-            MixTransformerEncoderLayer(160, 256, patch_size=3, stride=2, padding=1, n_layers=2, reduction_ratio=1, num_heads=8, expansion_factor=4)
+            MixTransformerEncoderLayer(in_channels=b0_config['mix_transformer_encoder_layer_1']['in_channels'], out_channels=b0_config['mix_transformer_encoder_layer_1']['out_channels'], patch_size=b0_config['mix_transformer_encoder_layer_1']['patch_size'], stride=b0_config['mix_transformer_encoder_layer_1']['stride'], padding=b0_config['mix_transformer_encoder_layer_1']['padding'], n_layers=b0_config['mix_transformer_encoder_layer_1']['n_layers'], reduction_ratio=b0_config['mix_transformer_encoder_layer_1']['reduction_ratio'], num_heads=b0_config['mix_transformer_encoder_layer_1']['num_heads'], expansion_factor=b0_config['mix_transformer_encoder_layer_1']['expansion_factor']),
+            MixTransformerEncoderLayer(in_channels=b0_config['mix_transformer_encoder_layer_2']['in_channels'], out_channels=b0_config['mix_transformer_encoder_layer_2']['out_channels'], patch_size=b0_config['mix_transformer_encoder_layer_2']['patch_size'], stride=b0_config['mix_transformer_encoder_layer_2']['stride'], padding=b0_config['mix_transformer_encoder_layer_2']['padding'], n_layers=b0_config['mix_transformer_encoder_layer_2']['n_layers'], reduction_ratio=b0_config['mix_transformer_encoder_layer_2']['reduction_ratio'], num_heads=b0_config['mix_transformer_encoder_layer_2']['num_heads'], expansion_factor=b0_config['mix_transformer_encoder_layer_2']['expansion_factor']),
+            MixTransformerEncoderLayer(in_channels=b0_config['mix_transformer_encoder_layer_3']['in_channels'], out_channels=b0_config['mix_transformer_encoder_layer_3']['out_channels'], patch_size=b0_config['mix_transformer_encoder_layer_3']['patch_size'], stride=b0_config['mix_transformer_encoder_layer_3']['stride'], padding=b0_config['mix_transformer_encoder_layer_3']['padding'], n_layers=b0_config['mix_transformer_encoder_layer_3']['n_layers'], reduction_ratio=b0_config['mix_transformer_encoder_layer_3']['reduction_ratio'], num_heads=b0_config['mix_transformer_encoder_layer_3']['num_heads'], expansion_factor=b0_config['mix_transformer_encoder_layer_3']['expansion_factor']),
+            MixTransformerEncoderLayer(in_channels=b0_config['mix_transformer_encoder_layer_4']['in_channels'], out_channels=b0_config['mix_transformer_encoder_layer_4']['out_channels'], patch_size=b0_config['mix_transformer_encoder_layer_4']['patch_size'], stride=b0_config['mix_transformer_encoder_layer_4']['stride'], padding=b0_config['mix_transformer_encoder_layer_4']['padding'], n_layers=b0_config['mix_transformer_encoder_layer_4']['n_layers'], reduction_ratio=b0_config['mix_transformer_encoder_layer_4']['reduction_ratio'], num_heads=b0_config['mix_transformer_encoder_layer_4']['num_heads'], expansion_factor=b0_config['mix_transformer_encoder_layer_4']['expansion_factor']),
         ])
         # Define the decoder
-        self.decoder = MLPDecoder([32, 64, 160, 256], 256, (64, 64), 4)
+        self.decoder = MLPDecoder(in_channels=b0_config['mlp_decoder']['in_channels'], embed_channels=b0_config['mlp_decoder']['embed_channels'], out_dims=b0_config['mlp_decoder']['out_dims'], num_classes=b0_config['mlp_decoder']['num_classes'])
         # Loss function
         self.loss = nn.CrossEntropyLoss()
 
@@ -55,12 +55,12 @@ class SegFormer_B0(pl.LightningModule):
         
     def configure_optimizers(self):
         # Configure optimizer
-        optimizer = torch.optim.AdamW(self.parameters(), lr=1e-5)
+        optimizer = torch.optim.AdamW(self.parameters(), lr=b0_config['optimizer']['learning_rate'])
         return optimizer
     
     def miou(self, prediction, targets):
         # Calculate mean intersection over union (mIoU) for segmentation accuracy
-        thr = 1e-5
+        thr = b0_config['miou']['threshold']
         C = prediction.size()[1]
         pred = prediction.argmax(dim=1)
         validClass = C
