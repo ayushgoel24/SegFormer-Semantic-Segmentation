@@ -1,0 +1,55 @@
+mix_transformer_encoder_layer_1:
+    in_channels: 3
+    out_channels: 32
+    patch_size: 7
+    stride: 4
+    padding: 3
+    n_layers: 2
+    reduction_ratio: 8
+    num_heads: 1
+    expansion_factor: 8
+
+mix_transformer_encoder_layer_2:
+    in_channels: 32
+    out_channels: 64
+    patch_size: 3
+    stride: 2
+    padding: 1
+    n_layers: 2
+    reduction_ratio: 4
+    num_heads: 2
+    expansion_factor: 8
+
+mix_transformer_encoder_layer_3:
+    in_channels: 64
+    out_channels: 160
+    patch_size: 3
+    stride: 2
+    padding: 1
+    n_layers: 2
+    reduction_ratio: 2
+    num_heads: 5
+    expansion_factor: 4
+
+mix_transformer_encoder_layer_4:
+    in_channels: 160
+    out_channels: 256
+    patch_size: 3
+    stride: 2
+    padding: 1
+    n_layers: 2
+    reduction_ratio: 1
+    num_heads: 8
+    expansion_factor: 4
+
+mlp_decoder:
+    in_channels: [32, 64, 160, 256]
+    embed_channels: 256
+    out_dims: [64, 64]
+    num_classes: 4
+
+optimizer:
+    learning_rate: 1e-5
+
+miou:
+    threshold: 1e-5
